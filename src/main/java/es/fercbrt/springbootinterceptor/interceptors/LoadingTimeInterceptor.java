@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component("loadingTimeInterceptor")
@@ -14,12 +15,14 @@ public class LoadingTimeInterceptor implements HandlerInterceptor {
 
         @Override
         public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-            logger.info("Entering... REQUEST URL: '" + request.getRequestURL().toString() + "' -- START TIME: '" + System.currentTimeMillis() + "'");
+            HandlerMethod method = (HandlerMethod) handler;
+            logger.info("LoadingTimeInterceptor: Entering..."+ method.getMethod().getName());
             return true;
         }
 
         @Override
         public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-            logger.info("Exiting... REQUEST URL: '" + request.getRequestURL().toString() + "' -- TOTAL TIME: '" + (System.currentTimeMillis() - (Long) request.getAttribute("startTime")) + "'ms");
+            HandlerMethod method = (HandlerMethod) handler;
+            logger.info("LoadingTimeInterceptor: Exiting..." + method.getMethod().getName());
         }
 }
