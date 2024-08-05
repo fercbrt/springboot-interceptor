@@ -24,7 +24,16 @@ public class LoadingTimeInterceptor implements HandlerInterceptor {
             Random random = new Random();
             int delay = random.nextInt(500);
             Thread.sleep(delay);
-            return true;
+
+            if(delay % 2 == 0){
+                logger.info("LoadingTimeInterceptor: Request accepted with delay: " + delay + " ms");
+                return true;
+            }
+            else {
+                logger.info("LoadingTimeInterceptor: Request rejected with delay: " + delay + " ms");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                return false;
+            }
         }
 
         @Override
