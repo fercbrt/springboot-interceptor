@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.util.Random;
+
 @Component("loadingTimeInterceptor")
 public class LoadingTimeInterceptor implements HandlerInterceptor {
 
@@ -17,12 +19,20 @@ public class LoadingTimeInterceptor implements HandlerInterceptor {
         public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
             HandlerMethod method = (HandlerMethod) handler;
             logger.info("LoadingTimeInterceptor: Entering..."+ method.getMethod().getName());
+            long startTime = System.currentTimeMillis();
+            request.setAttribute("startTime", startTime);
+            Random random = new Random();
+            int delay = random.nextInt(500);
+            Thread.sleep(delay);
             return true;
         }
 
         @Override
         public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
             HandlerMethod method = (HandlerMethod) handler;
-            logger.info("LoadingTimeInterceptor: Exiting..." + method.getMethod().getName());
+            long startTime = (long) request.getAttribute("startTime");
+            long endTime = System.currentTimeMillis();
+            long loadingTime = endTime - startTime;
+            logger.info("LoadingTimeInterceptor: Exiting..."+ method.getMethod().getName() + " - Time: " + loadingTime + " ms");
         }
 }
